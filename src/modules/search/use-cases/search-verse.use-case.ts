@@ -2,6 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import OpenAI from 'openai';
 
+type SearchResult = {
+  id: number;
+  book: string;
+  chapter: number;
+  verse: number;
+  text: string;
+  topics: string[] | null;
+  score: number;
+};
+
 @Injectable()
 export class SearchVersesUseCase {
   private openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -19,16 +29,15 @@ export class SearchVersesUseCase {
     });
 
     const queryEmbedding = response.data[0].embedding;
-
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
 
-    const results = await this.prisma.$queryRawUnsafe<any[]>(`
+    const results = (await this.prisma.$queryRawUnsafe(`
       SELECT id, book, chapter, verse, text, topics,
              1 - (embedding <#> '${embeddingStr}'::vector) AS score
       FROM "Verse"
       ORDER BY embedding <#> '${embeddingStr}'::vector
       LIMIT 10
-    `);
+    `)) as SearchResult[];
 
     return results.map((v) => ({
       reference: `${v.book} ${v.chapter}:${v.verse}`,
