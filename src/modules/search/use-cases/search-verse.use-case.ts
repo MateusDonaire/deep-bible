@@ -13,7 +13,6 @@ export class SearchVersesUseCase {
       throw new Error('A consulta deve ter pelo menos 2 caracteres.');
     }
 
-    // 🔹 Gera o embedding da pergunta do usuário com OpenAI
     const response = await this.openai.embeddings.create({
       model: 'text-embedding-ada-002',
       input: query,
@@ -21,23 +20,21 @@ export class SearchVersesUseCase {
 
     const queryEmbedding = response.data[0].embedding;
 
-    // 🔹 Converte o embedding em string no formato aceito pelo pgvector
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
 
-    // 🔹 Executa a busca vetorial usando interpolação segura
     const results = await this.prisma.$queryRawUnsafe<any[]>(`
-      SELECT id, book, chapter, verse, text,
+      SELECT id, book, chapter, verse, text, topics,
              1 - (embedding <#> '${embeddingStr}'::vector) AS score
       FROM "Verse"
       ORDER BY embedding <#> '${embeddingStr}'::vector
       LIMIT 10
     `);
 
-    // 🔹 Formata o retorno com referência e score
     return results.map((v) => ({
       reference: `${v.book} ${v.chapter}:${v.verse}`,
       text: v.text,
       score: Number(v.score.toFixed(4)),
+      topics: v.topics ?? [],
     }));
   }
 }
