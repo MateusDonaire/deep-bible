@@ -13,7 +13,6 @@ async function generateTopicsByChapter(batchSize = 5) {
   let total = 0;
 
   while (true) {
-    // 🔍 Pega alguns versículos ainda sem tópicos
     const verses = await prisma.verse.findMany({
       where: {
         OR: [

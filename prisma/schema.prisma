@@ -16,3 +16,10 @@ model Verse {
   embedding Unsupported("vector")?
   topics    String[]               @default([])
 }
+
+model Topic {
+  id          Int      @id
+  name        String   @unique
+  count       Int
+  description String?
+}
