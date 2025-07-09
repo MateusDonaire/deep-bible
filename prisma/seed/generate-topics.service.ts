@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Verse } from '@prisma/client';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -42,7 +42,7 @@ async function generateTopicsByChapter(batchSize = 5) {
         orderBy: { verse: 'asc' },
       });
 
-      const allIds = allVerses.map(v => v.id);
+      const allIds = allVerses.map((v: Verse) => v.id);
 
       const fullText = allVerses.map(v => `${v.verse}. ${v.text}`).join(' ');
 
