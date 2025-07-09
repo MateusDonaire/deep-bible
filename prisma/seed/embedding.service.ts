@@ -16,12 +16,12 @@ async function generateAllEmbeddings(batchSize = 100) {
   let total = 0;
 
   while (true) {
-  const verses = await prisma.$queryRawUnsafe<any[]>(`
+  const verses = await prisma.$queryRawUnsafe(`
     SELECT * FROM "Verse"
     WHERE embedding IS NULL
     ORDER BY id
     LIMIT ${batchSize}
-  `);
+  `) as any[];
 
 
     if (verses.length === 0) break;
