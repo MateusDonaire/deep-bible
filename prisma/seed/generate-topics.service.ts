@@ -1,11 +1,20 @@
 import OpenAI from 'openai';
-import { PrismaClient, Verse } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';  // removido o import quebrado 'Verse'
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 const prisma = new PrismaClient();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+type Verse = {
+  id: number;
+  book: string;
+  chapter: number;
+  verse: number;
+  text: string;
+  topics: string[] | null;
+};
 
 async function generateTopicsByChapter(batchSize = 5) {
   console.log('🚀 Iniciando geração de tópicos por capítulo...');
@@ -15,17 +24,14 @@ async function generateTopicsByChapter(batchSize = 5) {
   while (true) {
     const verses = await prisma.verse.findMany({
       where: {
-        OR: [
-          { topics: { equals: [] } },
-          { topics: { equals: null } },
-        ],
+        OR: [{ topics: { equals: [] } }, { topics: { equals: null } }],
       },
       take: batchSize,
     });
 
     if (verses.length === 0) break;
 
-    const grouped = new Map<string, { book: string, chapter: number, ids: number[] }>();
+    const grouped = new Map<string, { book: string; chapter: number; ids: number[] }>();
 
     for (const verse of verses) {
       const key = `${verse.book}-${verse.chapter}`;
@@ -36,15 +42,13 @@ async function generateTopicsByChapter(batchSize = 5) {
     }
 
     for (const { book, chapter } of grouped.values()) {
-
       const allVerses = await prisma.verse.findMany({
         where: { book, chapter },
         orderBy: { verse: 'asc' },
       });
 
-      const allIds = allVerses.map((v: Verse) => v.id);
-
-      const fullText = allVerses.map(v => `${v.verse}. ${v.text}`).join(' ');
+      const allIds = allVerses.map((v: Verse) => v.id);  // tipado manualmente
+      const fullText = allVerses.map((v: Verse) => `${v.verse}. ${v.text}`).join(' ');
 
       const prompt = `Com base no texto completo abaixo, gere até 3 tópicos curtos, genéricos e representativos que resumem o tema do capítulo bíblico. Use apenas uma ou duas palavras por tópico, sem números, hífens ou frases longas. Separe por vírgulas. Ex: Criação, Redenção, Julgamento.
 
@@ -57,10 +61,7 @@ Texto: ${book} capítulo ${chapter} - ${fullText}`;
         });
 
         const raw = response.choices[0].message.content || '';
-        const topics = raw
-          .split(',')
-          .map(t => t.trim())
-          .filter(t => t.length > 1);
+        const topics = raw.split(',').map((t) => t.trim()).filter((t) => t.length > 1);
 
         if (topics.length === 0) {
           console.warn(`⚠️ Nenhum tópico válido para ${book} ${chapter}`);
