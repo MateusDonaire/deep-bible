@@ -18,9 +18,7 @@ describe('SearchVersesUseCase', () => {
       },
     } as any;
 
-    useCase = new SearchVersesUseCase(prisma);
-    // Sobrescrevendo a instância interna do openai para o mock
-    (useCase as any).openai = openai;
+    useCase = new SearchVersesUseCase(prisma, openai);
   });
 
   it('deve retornar resultados de busca com base no embedding', async () => {

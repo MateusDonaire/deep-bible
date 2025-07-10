@@ -14,9 +14,14 @@ type SearchResult = {
 
 @Injectable()
 export class SearchVersesUseCase {
-  private openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  private openai: OpenAI;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    openaiInstance?: OpenAI,
+  ) {
+    this.openai = openaiInstance || new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
 
   async execute(query: string) {
     if (!query || query.length < 2) {
