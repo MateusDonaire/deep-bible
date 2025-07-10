@@ -10,24 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Etapa 1: Checkout
+      - name: ⏬ Checkout do código
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      # Etapa 2: Instalar Node.js
+      - name: 🔧 Instalando Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      # Etapa 3: Instalando dependências
+      - name: 📦 Instalando dependências
         run: npm ci
 
-      - name: Run tests
+      # Etapa 4: Rodando testes
+      - name: ✅ Rodando testes
         run: npm run test
 
-      - name: Build project
+      # Etapa 5: Build do projeto
+      - name: 🛠️ Build do projeto
         run: npm run build
 
-      - name: Deploy to EC2
+      # Etapa 6: Deploy no EC2
+      - name: 🚀 Deploy no EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
