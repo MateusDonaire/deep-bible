@@ -1,4 +1,4 @@
-name: CI/CD Deploy
+name: Deploy
 
 on:
   push:
@@ -10,38 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Etapa 1: Checkout
-      - name: ⏬ Checkout do código
-        uses: actions/checkout@v3
+    - name: Checkout código
+      uses: actions/checkout@v4
 
-      # Etapa 2: Instalar Node.js
-      - name: 🔧 Instalando Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    - name: Instalar dependências
+      run: npm ci
 
-      # Etapa 3: Instalando dependências
-      - name: 📦 Instalando dependências
-        run: npm ci
+    - name: Rodar testes
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: npm run test
 
-      # Etapa 4: Rodando testes
-      - name: ✅ Rodando testes
-        run: npm run test
+    - name: Build do projeto
+      run: npm run build
 
-      # Etapa 5: Build do projeto
-      - name: 🛠️ Build do projeto
-        run: npm run build
-
-      # Etapa 6: Deploy no EC2
-      - name: 🚀 Deploy no EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            cd ${{ secrets.EC2_PATH }}
-            git pull origin main
-            npm ci
-            npm run build
-            pm2 restart deepbible || pm2 start dist/src/main.js --name deepbible
+    - name: Deploy
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          cd ${{ secrets.EC2_PATH }}
+          git pull origin main
+          npm ci
+          npm run build
