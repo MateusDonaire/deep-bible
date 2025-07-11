@@ -40,3 +40,5 @@ jobs:
           npm install
           npm run build
           pm2 restart deepbible || pm2 start dist/src/main.js --name deepbible
+        timeout: 600s
+        command_timeout: 600s
