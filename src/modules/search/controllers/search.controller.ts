@@ -11,7 +11,7 @@ export class SearchController {
 
   @Get()
   @ApiOperation({ summary: 'Busca semântica de versículos' })
-  @ApiQuery({ name: 'query', example: 'discípulos', description: 'Texto para busca semântica' })
+  @ApiQuery({ name: 'query', example: 'papel do marido', description: 'Texto para busca semântica' })
   @ApiResponse({
     status: 200,
     description: 'Lista de versículos mais relevantes',
