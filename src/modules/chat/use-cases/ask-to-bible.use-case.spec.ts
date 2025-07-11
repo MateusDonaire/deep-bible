@@ -75,8 +75,10 @@ describe('AskToBibleUseCase', () => {
   it('deve lançar NotFoundException se o versículo não for encontrado', async () => {
     (prisma.verse.findFirst as jest.Mock).mockResolvedValue(null);
 
-    await expect(useCase.execute('Qualquer pergunta', 'João 3:16')).rejects.toThrow(NotFoundException);
-    await expect(useCase.execute('Qualquer pergunta', 'João 3:16')).rejects.toThrow('Versículo não encontrado.');
+    const promise = useCase.execute('Qualquer pergunta', 'João 3:16');
+
+    await expect(promise).rejects.toThrow(NotFoundException);
+    await expect(promise).rejects.toThrow("Versículo 16 do capítulo 3 do livro 'João' não encontrado.");
   });
 
   it('deve lançar InternalServerErrorException se o OpenAI falhar', async () => {

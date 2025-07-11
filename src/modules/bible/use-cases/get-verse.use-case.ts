@@ -6,12 +6,16 @@ export class GetVerseUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(book: string, chapter: number, verse: number) {
-
-    const bookExists = await this.prisma.verse.findFirst({
-      where: { book: { equals: book, mode: 'insensitive' } },
+    const verseData = await this.prisma.verse.findFirst({
+      where: {
+        book: { equals: book, mode: 'insensitive' },
+        chapter,
+        verse,
+      },
     });
-    if (!bookExists) {
-      throw new NotFoundException(`Livro '${book}' não encontrado.`);
+
+    if (verseData) {
+      return verseData;
     }
 
     const chapterExists = await this.prisma.verse.findFirst({
@@ -20,21 +24,23 @@ export class GetVerseUseCase {
         chapter,
       },
     });
-    if (!chapterExists) {
-      throw new NotFoundException(`Capítulo ${chapter} do livro '${book}' não encontrado.`);
+
+    if (chapterExists) {
+      throw new NotFoundException(
+        `Versículo ${verse} do capítulo ${chapter} do livro '${book}' não encontrado.`,
+      );
     }
 
-    const verseData = await this.prisma.verse.findFirst({
-      where: {
-        book: { equals: book, mode: 'insensitive' },
-        chapter,
-        verse,
-      },
+    const bookExists = await this.prisma.verse.findFirst({
+      where: { book: { equals: book, mode: 'insensitive' } },
     });
-    if (!verseData) {
-      throw new NotFoundException(`Versículo ${verse} do capítulo ${chapter} do livro '${book}' não encontrado.`);
+
+    if (bookExists) {
+      throw new NotFoundException(
+        `Capítulo ${chapter} do livro '${book}' não encontrado.`,
+      );
     }
 
-    return verseData;
+    throw new NotFoundException(`Livro '${book}' não encontrado.`);
   }
 }
