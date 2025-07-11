@@ -9,7 +9,6 @@ type SearchResult = {
   verse: number;
   text: string;
   topics: string[] | null;
-  score: number;
 };
 
 @Injectable()
@@ -47,7 +46,6 @@ export class SearchVersesUseCase {
     return results.map((v) => ({
       reference: `${v.book} ${v.chapter}:${v.verse}`,
       text: v.text,
-      score: Number(v.score.toFixed(4)),
       topics: v.topics ?? [],
     }));
   }
