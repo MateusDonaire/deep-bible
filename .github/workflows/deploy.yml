@@ -24,14 +24,19 @@ jobs:
     - name: Build do projeto
       run: npm run build
 
-    - name: Deploy
+    - name: Deploy no EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          cd ${{ secrets.EC2_PATH }}
+          cd /home/ubuntu
+          if [ ! -d "deep-bible" ]; then
+            git clone https://github.com/seu-usuario/deep-bible.git
+          fi
+          cd deep-bible
           git pull origin main
-          npm ci
+          npm install
           npm run build
+          pm2 restart deepbible || pm2 start dist/main.js --name deepbible
