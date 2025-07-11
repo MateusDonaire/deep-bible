@@ -18,7 +18,7 @@ describe('GetPopularTopicsUseCase', () => {
 
   it('deve retornar os tópicos populares e o total de tópicos únicos', async () => {
     const mockTopics = [
-      { name: 'Fé', count: 20, description: 'Sobre fé' },
+      { name: 'Fé', description: 'Sobre fé' },
     ];
     (prisma.topic.findMany as jest.Mock).mockResolvedValue(mockTopics);
     (prisma.topic.count as jest.Mock).mockResolvedValue(5);
@@ -38,7 +38,6 @@ describe('GetPopularTopicsUseCase', () => {
       popularTopics: [
         {
           topic: 'Fé',
-          count: 20,
           description: 'Sobre fé',
         },
       ],

@@ -30,8 +30,7 @@ describe('SearchVersesUseCase', () => {
         chapter: 23,
         verse: 1,
         text: 'O Senhor é meu pastor...',
-        topics: ['confiança'],
-        score: 0.95,
+        topics: ['confiança']
       },
     ];
 
@@ -51,7 +50,6 @@ describe('SearchVersesUseCase', () => {
       {
         reference: 'Salmos 23:1',
         text: 'O Senhor é meu pastor...',
-        score: Number(mockResults[0].score.toFixed(4)),
         topics: ['confiança'],
       },
     ]);

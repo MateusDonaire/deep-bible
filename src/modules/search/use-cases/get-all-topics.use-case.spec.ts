@@ -18,7 +18,7 @@ describe('GetAllTopicsUseCase', () => {
 
   it('deve retornar a lista de tópicos com total', async () => {
     const mockTopics = [
-      { id: 1, name: 'Amor', count: 10, description: 'Sobre amor' },
+      { id: 1, name: 'Amor', description: 'Sobre amor' },
     ];
     (prisma.topic.findMany as jest.Mock).mockResolvedValue(mockTopics);
     (prisma.topic.count as jest.Mock).mockResolvedValue(1);
@@ -39,7 +39,6 @@ describe('GetAllTopicsUseCase', () => {
         {
           id: 1,
           topic: 'Amor',
-          count: 10,
           description: 'Sobre amor',
         },
       ],
