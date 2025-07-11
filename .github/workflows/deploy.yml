@@ -6,39 +6,77 @@ on:
       - main
 
 jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.get_sha.outputs.sha }}
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Get commit SHA
+        id: get_sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+  install:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+  test:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Rodar testes
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npm run test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build do projeto
+        run: npm run build
+
   deploy:
     runs-on: ubuntu-latest
-
+    needs: build
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v4
-
-    - name: Instalar dependências
-      run: npm ci
-
-    - name: Rodar testes
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      run: npm run test
-
-    - name: Build do projeto
-      run: npm run build
-
-    - name: Deploy no EC2
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          cd /home/ubuntu
-          if [ ! -d "deep-bible" ]; then
-            git clone https://github.com/MateusDonaire/deep-bible.git
-          fi
-          cd deep-bible
-          git pull origin main
-          npm install
-          npm run build
-          pm2 restart deepbible || pm2 start dist/src/main.js --name deepbible
-        timeout: 600s
-        command_timeout: 600s
+      - name: Deploy no EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu
+            if [ ! -d "deep-bible" ]; then
+              git clone https://github.com/MateusDonaire/deep-bible.git
+            fi
+            cd deep-bible
+            git reset --hard
+            git pull origin main
+            npm install
+            npm run build
+            pm2 delete deepbible || echo "App deepbible não existia"
+            pm2 start dist/src/main.js --name deepbible --update-env
+          timeout: 600s
+          command_timeout: 600s
