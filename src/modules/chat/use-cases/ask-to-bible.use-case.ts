@@ -10,15 +10,21 @@ export class AskToBibleUseCase {
   ) {}
 
   async execute(query: string, bibleVerse: string) {
-    const [book, chapterAndVerse] = bibleVerse.split(' ');
+    const parts = bibleVerse.trim().split(' ');
+    const chapterAndVerse = parts.pop();
+    const book = parts.join(' ');
     const [chapter, verse] = chapterAndVerse.split(':').map(Number);
+
+    if (!book || !chapter || !verse) {
+      throw new NotFoundException('Formato inválido de referência bíblica. Use algo como "1 Pedro 3:7".');
+    }
 
     const verseData = await this.prisma.verse.findFirst({
       where: { book, chapter, verse }
     });
 
     if (!verseData) {
-      throw new NotFoundException('Versículo não encontrado.');
+      throw new NotFoundException(`Versículo ${verse} do capítulo ${chapter} do livro '${book}' não encontrado.`);
     }
 
     const prompt = `
