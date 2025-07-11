@@ -24,7 +24,6 @@ export class GetAllTopicsUseCase {
       topics: topics.map((t) => ({
         id: t.id,
         topic: t.name,
-        count: t.count,
         description: t.description,
       })),
     };

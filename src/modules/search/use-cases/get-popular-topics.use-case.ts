@@ -20,7 +20,6 @@ export class GetPopularTopicsUseCase {
       totalUniqueTopics: await this.prisma.topic.count(),
       popularTopics: topics.map(t => ({
         topic: t.name,
-        count: t.count,
         description: t.description,
       })),
     };
