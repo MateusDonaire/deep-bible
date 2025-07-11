@@ -1,6 +1,7 @@
 import { AskToBibleUseCase } from './ask-to-bible.use-case';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { OpenAI } from 'openai';
+import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
 
 describe('AskToBibleUseCase', () => {
   let useCase: AskToBibleUseCase;
@@ -61,9 +62,19 @@ describe('AskToBibleUseCase', () => {
     });
   });
 
-  it('deve lançar erro se o versículo não for encontrado', async () => {
+  it('deve lançar NotFoundException se o versículo não for encontrado', async () => {
     (prisma.verse.findFirst as jest.Mock).mockResolvedValue(null);
 
+    await expect(useCase.execute('Qualquer pergunta', 'João 3:16')).rejects.toThrow(NotFoundException);
     await expect(useCase.execute('Qualquer pergunta', 'João 3:16')).rejects.toThrow('Versículo não encontrado.');
+  });
+
+  it('deve lançar InternalServerErrorException se o OpenAI falhar', async () => {
+    const mockVerse = { book: 'João', chapter: 3, verse: 16, text: 'Porque Deus amou o mundo de tal maneira...' };
+    (prisma.verse.findFirst as jest.Mock).mockResolvedValue(mockVerse);
+    (openai.chat.completions.create as jest.Mock).mockRejectedValue(new Error('OpenAI error'));
+
+    await expect(useCase.execute('O que significa este versículo?', 'João 3:16')).rejects.toThrow(InternalServerErrorException);
+    await expect(useCase.execute('O que significa este versículo?', 'João 3:16')).rejects.toThrow('Erro ao processar resposta com IA.');
   });
 });

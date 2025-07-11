@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { OpenAI } from 'openai';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 
@@ -18,7 +18,7 @@ export class AskToBibleUseCase {
     });
 
     if (!verseData) {
-      throw new Error('Versículo não encontrado.');
+      throw new NotFoundException('Versículo não encontrado.');
     }
 
     const prompt = `
@@ -31,15 +31,19 @@ Pergunta: ${query}
 Responda de forma clara, fiel ao texto, em tom pastoral.
     `.trim();
 
-    const completion = await this.openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-    });
+    try {
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+      });
 
-    return {
-      reference: bibleVerse,
-      text: verseData.text,
-      answer: completion.choices[0].message.content
-    };
+      return {
+        reference: bibleVerse,
+        text: verseData.text,
+        answer: completion.choices[0].message.content
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao processar resposta com IA.');
+    }
   }
 }
