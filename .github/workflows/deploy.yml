@@ -33,10 +33,10 @@ jobs:
         script: |
           cd /home/ubuntu
           if [ ! -d "deep-bible" ]; then
-            git clone https://github.com/seu-usuario/deep-bible.git
+            git clone https://github.com/MateusDonaire/deep-bible.git
           fi
           cd deep-bible
           git pull origin main
           npm install
           npm run build
-          pm2 restart deepbible || pm2 start dist/main.js --name deepbible
+          pm2 restart deepbible || pm2 start dist/src/main.js --name deepbible
