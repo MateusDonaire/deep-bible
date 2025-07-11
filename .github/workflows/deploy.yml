@@ -36,9 +36,25 @@ jobs:
             git clone https://github.com/MateusDonaire/deep-bible.git
           fi
           cd deep-bible
+          echo "👉 Matando processos Node pendentes..."
+          pkill -f 'node --enable-source-maps' || echo "Nenhum processo Node encontrado"
+          
+          echo "👉 Limpando dist/ antigo..."
+          rm -rf dist/
+
+          echo "👉 Atualizando código..."
+          git reset --hard
           git pull origin main
+
+          echo "👉 Instalando dependências..."
           npm install
+
+          echo "👉 Buildando projeto..."
           npm run build
-          pm2 restart deepbible || pm2 start dist/src/main.js --name deepbible
+
+          echo "👉 Reiniciando PM2 com update-env..."
+          pm2 delete deepbible || echo "App deepbible não existia"
+          pm2 start dist/src/main.js --name deepbible --update-env
+
         timeout: 600s
         command_timeout: 600s
