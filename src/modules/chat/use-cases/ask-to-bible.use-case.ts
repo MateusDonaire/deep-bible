@@ -22,11 +22,11 @@ export class AskToBibleUseCase {
     }
 
     const prompt = `
-Você é um assistente bíblico. Responda à pergunta abaixo com base no versículo e também sugira conexões e aplicações para estudo.
+Você é um assistente bíblico. Responda à pergunta abaixo com base no versículo e também sugira conexões com outras passagens da bíblia e aplicações para estudo.
 
-📖 Versículo: ${bibleVerse} - ${verseData.text}
+Versículo: ${bibleVerse} - ${verseData.text}
 
-❓ Pergunta: ${query}
+Pergunta: ${query}
 
 Responda de forma clara, fiel ao texto, em tom pastoral.
     `.trim();
