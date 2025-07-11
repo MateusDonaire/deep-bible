@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('DeepBible API')
+    .setTitle('Deep Bible API')
     .setDescription('API para análise e busca de textos bíblicos com I.A')
     .setVersion('1.0')
     .build();
