@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import OpenAI from 'openai';
 
@@ -24,7 +24,7 @@ export class SearchVersesUseCase {
 
   async execute(query: string) {
     if (!query || query.length < 2) {
-      throw new Error('A consulta deve ter pelo menos 2 caracteres.');
+      throw new BadRequestException('A consulta deve ter pelo menos 2 caracteres.');
     }
 
     const response = await this.openai.embeddings.create({
