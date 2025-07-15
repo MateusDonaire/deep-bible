@@ -34,7 +34,7 @@ async function generateAllEmbeddings(batchSize = 100) {
           model: 'text-embedding-ada-002',
           input: inputText,
         });
-
+        
         const embedding = result.data[0].embedding;
 
       await prisma.verse.update({

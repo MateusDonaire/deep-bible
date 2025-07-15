@@ -47,7 +47,7 @@ async function generateTopicsByChapter(batchSize = 5) {
         orderBy: { verse: 'asc' },
       });
 
-      const allIds = allVerses.map((v: Verse) => v.id);  // tipado manualmente
+      const allIds = allVerses.map((v: Verse) => v.id);
       const fullText = allVerses.map((v: Verse) => `${v.verse}. ${v.text}`).join(' ');
 
       const prompt = `Com base no texto completo abaixo, gere até 3 tópicos curtos, genéricos e representativos que resumem o tema do capítulo bíblico. Use apenas uma ou duas palavras por tópico, sem números, hífens ou frases longas. Separe por vírgulas. Ex: Criação, Redenção, Julgamento.
