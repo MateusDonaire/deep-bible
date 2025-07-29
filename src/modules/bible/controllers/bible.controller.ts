@@ -1,8 +1,8 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { GetVerseUseCase } from '../use-cases/get-verse.use-case';
-import { GetChapterUseCase } from '../use-cases/get-chapter.use-case';
-import { ChapterResponseDto, VerseResponseDto } from '../dtos/bible-response-schema.dto';
+import { GetVerseUseCase } from '../application/use-cases/get-verse.use-case';
+import { GetChapterUseCase } from '../application/use-cases/get-chapter.use-case';
+import { ChapterResponseDto, VerseResponseDto } from '../domain/dtos/bible-response-schema.dto';
 
 @ApiTags('Bible')
 @Controller('bible')
