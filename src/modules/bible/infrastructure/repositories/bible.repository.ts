@@ -12,8 +12,27 @@ export class BibleRepository implements IBibleRepository {
     const result = await this.prisma.verse.findFirst({
       where: { book: { equals: book, mode: 'insensitive' } },
     });
-
     return !!result;
+  }
+
+  async findChapter(book: string, chapter: number): Promise<boolean> {
+    const result = await this.prisma.verse.findFirst({
+      where: {
+        book: { equals: book, mode: 'insensitive' },
+        chapter,
+      },
+    });
+    return !!result;
+  }
+
+  async findVerse(book: string, chapter: number, verse: number): Promise<VerseEntity | null> {
+    return this.prisma.verse.findFirst({
+      where: {
+        book: { equals: book, mode: 'insensitive' },
+        chapter,
+        verse,
+      },
+    });
   }
 
   async findChapterVerses(book: string, chapter: number): Promise<VerseEntity[]> {
