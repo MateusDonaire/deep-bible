@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AskToBibleDto } from '../dtos/ask-to-bible.dto';
-import { AskToBibleUseCase } from '../use-cases/ask-to-bible.use-case';
+import { AskToBibleDto } from '../domain/dtos/ask-to-bible.dto';
+import { AskToBibleUseCase } from '../application/use-cases/ask-to-bible.use-case';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger/dist/decorators';
 
 @Controller('ai')
