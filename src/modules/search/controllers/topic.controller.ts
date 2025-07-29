@@ -1,8 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { GetPopularTopicsUseCase } from '../use-cases/get-popular-topics.use-case';
-import { GetAllTopicsUseCase } from '../use-cases/get-all-topics.use-case';
-import { TopicsResponseDto } from '../dtos/topics-response-schema.dto';
+import { GetPopularTopicsUseCase } from '../application/use-cases/get-popular-topics.use-case';
+import { GetAllTopicsUseCase } from '../application/use-cases/get-all-topics.use-case';
+import { TopicsResponseDto } from '../domain/dtos/topics-response-schema.dto';
 
 @ApiTags('Topics')
 @Controller('topics')

@@ -1,8 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { SearchVersesUseCase } from '../use-cases/search-verse.use-case';
-import { SemanticQueryDto } from '../dtos/semantic-query.dto';
-import { SearchResponseDto } from '../dtos/search-response-schema.dto';
+import { SearchVersesUseCase } from '../application/use-cases/search-verse.use-case';
+import { SemanticQueryDto } from '../domain/dtos/semantic-query.dto';
+import { SearchResponseDto } from '../domain/dtos/search-response-schema.dto';
 
 @ApiTags('Search')
 @Controller('search')
