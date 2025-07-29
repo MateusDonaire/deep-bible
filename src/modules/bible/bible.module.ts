@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '@/infra/prisma/prisma.module';
-import { BibleController } from './controllers/bible.controller';
-import { GetVerseUseCase } from './use-cases/get-verse.use-case';
-import { GetChapterUseCase } from './use-cases/get-chapter.use-case';
+import { GetChapterUseCase } from './application/use-cases/get-chapter.use-case';
+import { PrismaService } from '@/infra/prisma/prisma.service';
+import { BibleRepository } from './infrastructure/repositories/bible.repository';
+
 @Module({
-  imports: [PrismaModule],
-  controllers: [BibleController],
-  providers: 
-  [
-    GetVerseUseCase,
-    GetChapterUseCase
+  providers: [
+    GetChapterUseCase,
+    PrismaService,
+    BibleRepository,
+    {
+      provide: 'IBibleRepository',
+      useClass: BibleRepository,
+    },
   ],
+  exports: [GetChapterUseCase],
 })
 export class BibleModule {}

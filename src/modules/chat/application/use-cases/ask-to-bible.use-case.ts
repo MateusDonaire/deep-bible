@@ -1,12 +1,13 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import { OpenAI } from 'openai';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+// src/modules/bible/application/use-cases/ask-to-bible.use-case.ts
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { IAIService } from '../../domain/interfaces/ai-service.interface';
+import { IBibleRepository } from '../../domain/interfaces/bible-repository.interface';
 
 @Injectable()
 export class AskToBibleUseCase {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly openai: OpenAI
+    @Inject('IBibleRepository') private readonly bibleRepo: IBibleRepository,
+    @Inject('IAIService') private readonly aiService: IAIService,
   ) {}
 
   async execute(query: string, bibleVerse: string) {
@@ -19,9 +20,7 @@ export class AskToBibleUseCase {
       throw new NotFoundException('Formato inválido de referência bíblica. Use algo como "1 Pedro 3:7".');
     }
 
-    const verseData = await this.prisma.verse.findFirst({
-      where: { book, chapter, verse }
-    });
+    const verseData = await this.bibleRepo.findVerse(book, chapter, verse);
 
     if (!verseData) {
       throw new NotFoundException(`Versículo ${verse} do capítulo ${chapter} do livro '${book}' não encontrado.`);
@@ -38,15 +37,12 @@ Responda de forma clara, fiel ao texto, em tom pastoral.
     `.trim();
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt }],
-      });
+      const resposta = await this.aiService.ask(prompt);
 
       return {
         reference: bibleVerse,
         text: verseData.text,
-        answer: completion.choices[0].message.content
+        answer: resposta,
       };
     } catch (error) {
       throw new InternalServerErrorException('Erro ao processar resposta com IA.');
