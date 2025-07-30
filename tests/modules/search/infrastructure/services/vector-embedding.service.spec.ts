@@ -1,4 +1,3 @@
-// tests/modules/search/infrastructure/services/vector-embedding.service.spec.ts
 import { VectorEmbeddingService } from '@/modules/search/infrastructure/services/vector-embedding.service';
 import OpenAI from 'openai';
 
